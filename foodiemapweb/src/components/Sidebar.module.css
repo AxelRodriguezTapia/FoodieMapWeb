@@ -1,0 +1,30 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 100%;
+  background-color: #f4f4f4;
+  padding: 20px;
+}
+  
+  .sidebar h2 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+  
+  .nav-link {
+    display: block;
+    padding: 12px;
+    border-radius: 4px;
+    background-color: #e60000; /* Rojo más suave para los enlaces */
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: white;
+  }
+  
+  .nav-link:hover {
+    background-color: #cc0000; /* Color de hover más oscuro */
+  }
+  
