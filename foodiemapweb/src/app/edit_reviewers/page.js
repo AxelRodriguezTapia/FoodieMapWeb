@@ -76,21 +76,22 @@ export default function EditReviewers() {
   return (
     <div className="flex">
       <div className={styles.mainContent}>
-        <h1 className="text-5xl font-bold text-center">EDIT REVIEWERS</h1>
+        <h1 className="text-4xl font-bold text-center text-blue-600 mb-6">EDIT REVIEWERS</h1>
 
         {/* Botón para mostrar el formulario */}
         <button
           onClick={() => setShowForm(!showForm)}
-          className="mt-4 p-3 bg-blue-600 text-white rounded"
+          className="mb-6 w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           {showForm ? "Hide Form" : "Add Reviewer"}
         </button>
 
         {/* Formulario desplegable */}
         {showForm && (
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Avatar URL */}
             <div>
-              <label htmlFor="avatarUrl" className="block text-lg">
+              <label htmlFor="avatarUrl" className="block text-lg font-medium text-gray-700">
                 Avatar URL:
               </label>
               <input
@@ -99,13 +100,14 @@ export default function EditReviewers() {
                 id="avatarUrl"
                 value={formData.avatarUrl}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter avatar URL"
               />
             </div>
 
+            {/* Last Video URL (optional) */}
             <div>
-              <label htmlFor="lastVideoUrl" className="block text-lg">
+              <label htmlFor="lastVideoUrl" className="block text-lg font-medium text-gray-700">
                 Last Video URL (Optional):
               </label>
               <input
@@ -114,13 +116,14 @@ export default function EditReviewers() {
                 id="lastVideoUrl"
                 value={formData.lastVideoUrl}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter last video URL (optional)"
               />
             </div>
 
+            {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-lg">
+              <label htmlFor="name" className="block text-lg font-medium text-gray-700">
                 Name:
               </label>
               <input
@@ -129,13 +132,14 @@ export default function EditReviewers() {
                 id="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter name"
               />
             </div>
 
+            {/* Website URL */}
             <div>
-              <label htmlFor="websiteUrl" className="block text-lg">
+              <label htmlFor="websiteUrl" className="block text-lg font-medium text-gray-700">
                 Website URL:
               </label>
               <div className="flex items-center">
@@ -145,21 +149,22 @@ export default function EditReviewers() {
                   id="websiteUrl"
                   value={formData.websiteUrl}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter website URL"
                 />
                 <button
                   type="button"
                   onClick={() => window.open(formData.websiteUrl, "_blank")}
-                  className="ml-2 p-2 bg-green-600 text-white rounded"
+                  className="ml-2 p-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none"
                 >
                   Visit
                 </button>
               </div>
             </div>
 
+            {/* Channel ID */}
             <div>
-              <label htmlFor="channelId" className="block text-lg">
+              <label htmlFor="channelId" className="block text-lg font-medium text-gray-700">
                 Channel ID:
               </label>
               <div className="flex items-center">
@@ -169,23 +174,24 @@ export default function EditReviewers() {
                   id="channelId"
                   value={formData.channelId}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter YouTube channel ID"
                 />
                 <button
                   type="button"
                   onClick={fetchChannelId}
-                  className="ml-2 p-2 bg-yellow-600 text-white rounded"
+                  className="ml-2 p-3 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none"
                 >
                   Get Channel ID
                 </button>
               </div>
             </div>
 
+            {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                className="mt-4 w-full p-3 bg-blue-600 text-white rounded"
+                className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
               >
                 Add Reviewer
               </button>
