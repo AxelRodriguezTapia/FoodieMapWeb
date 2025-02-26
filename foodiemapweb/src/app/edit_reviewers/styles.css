@@ -1,0 +1,88 @@
+.container {
+  display: flex;
+}
+
+.mainContent {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #1e40af;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+h2 {
+  text-align: center;
+  color: #374151;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  margin-left: 60px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin-left: 60px;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+button:hover {
+  background-color: #1c3aa9;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+form {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button {
+  background-color: #1e40af;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center; /* Centra los botones en el contenedor */
+  gap: 10px; /* Espacio entre los botones */
+  margin-top: 20px; /* Ajusta el espacio superior de la paginación */
+}
+
+.pagination-container button {
+  margin-left: 0; /* Elimina el margen izquierdo */
+}
+
+.pagination-container button:disabled {
+  background-color: #c1c1c1; /* Color gris para botones deshabilitados */
+  cursor: not-allowed; /* Cambia el cursor cuando el botón está deshabilitado */
+}

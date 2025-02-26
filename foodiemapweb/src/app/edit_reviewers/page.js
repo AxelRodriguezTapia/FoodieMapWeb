@@ -3,12 +3,9 @@
 import { useState, useEffect } from "react";
 import { db } from "../../components/firebaseConfig.js"; // Asegúrate de que la configuración de Firebase esté correctamente importada
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import styles from "../page.module.css";
+import styles from "./styles.css";
 
 export default function EditReviewers() {
-  // Estado para manejar la visibilidad del formulario
-  const [showForm, setShowForm] = useState(false);
-
   // Estado para manejar los valores del formulario de edición
   const [formData, setFormData] = useState({
     avatarUrl: "",
@@ -94,21 +91,9 @@ export default function EditReviewers() {
         websiteUrl: "",
         channelId: "",
       });
-      setShowForm(false); // Ocultar el formulario después de guardar los cambios
       fetchReviewers(); // Refrescar la lista después de actualizar
     } catch (error) {
       console.error("Error updating reviewer: ", error);
-    }
-  };
-
-  // Función para editar un reviewer
-  const handleEdit = (id) => {
-    const reviewer = reviewers.find((r) => r.id === id);
-    setFormData(reviewer); // Rellenar el formulario con los datos actuales del reviewer
-    if(showForm) {
-        setShowForm(false); // Ocultar el formulario si ya está visible
-    }else{
-        setShowForm(true); // Mostrar el formulario de edición
     }
   };
 
@@ -134,12 +119,39 @@ export default function EditReviewers() {
   // Función para cambiar la página de paginación
   const changePage = (pageNumber) => {
     setCurrentPage(pageNumber);
-    setShowForm(false); // Ocultar el formulario al cambiar de página
+  };
+
+  // Función para ir a la página anterior
+  const goToPreviousPage = () => {
+    setCurrentPage(currentPage > 1 ? currentPage - 1 : 1);
+  };
+
+  // Función para ir a la página siguiente
+  const goToNextPage = () => {
+    setCurrentPage(currentPage < Math.ceil(reviewers.length / reviewersPerPage) ? currentPage + 1 : currentPage);
   };
 
   useEffect(() => {
     fetchReviewers();
   }, []);
+
+  // Actualizar formData con el reviewer correspondiente cuando cambie la página
+  useEffect(() => {
+    const indexOfLastReviewer = currentPage * reviewersPerPage;
+    const indexOfFirstReviewer = indexOfLastReviewer - reviewersPerPage;
+    const currentReviewer = reviewers.slice(indexOfFirstReviewer, indexOfLastReviewer)[0];
+    
+    if (currentReviewer) {
+      setFormData({
+        avatarUrl: currentReviewer.avatarUrl,
+        lastVideoUrl: currentReviewer.lastVideoUrl,
+        name: currentReviewer.name,
+        websiteUrl: currentReviewer.websiteUrl,
+        channelId: currentReviewer.channelId,
+        id: currentReviewer.id,  // Asegúrate de tener el id del reviewer
+      });
+    }
+  }, [currentPage, reviewers]);
 
   // Paginar los reviewers
   const indexOfLastReviewer = currentPage * reviewersPerPage;
@@ -149,47 +161,13 @@ export default function EditReviewers() {
   return (
     <div className="flex">
       <div className={styles.mainContent}>
-        <h1 className="text-4xl font-bold text-center text-blue-600 mb-6">EDIT REVIEWERS</h1>
-
-        {/* Lista de reviewers */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-center text-gray-700">Reviewers List</h2>
-          <ul className="space-y-4">
-            {currentReviewers.map((reviewer) => (
-              <li key={reviewer.id} className="flex justify-between items-center border-b pb-3 mb-3">
-                <div>
-                  <strong>{reviewer.name}</strong>
-                  <p>{reviewer.websiteUrl}</p>
-                </div>
-                <button
-                  onClick={() => handleEdit(reviewer.id)}
-                  className="text-blue-600 hover:text-blue-700"
-                >
-                  Edit
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {/* Paginación */}
-          <div className="flex justify-center space-x-4 mt-4">
-            {[...Array(Math.ceil(reviewers.length / reviewersPerPage))].map((_, index) => (
-              <button
-                key={index}
-                onClick={() => changePage(index + 1)}
-                className={`p-2 ${currentPage === index + 1 ? "bg-blue-600 text-white" : "bg-gray-300"} rounded-full`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-        </div>
+        <h1 className="text-align:center color: #1e40af font-size:32px font-weight:bold margin-bottom:20px">EDIT REVIEWERS</h1>
 
         {/* Formulario de edición */}
-        {showForm && (
+        {currentReviewers.length > 0 && (
           <>
-            <h2 className="text-2xl font-semibold text-center text-gray-700 mb-4">Edit Reviewer</h2>
-            <form onSubmit={handleEditSubmit} className="space-y-6">
+            <h2 className={styles.h2}>Edit Reviewer</h2>
+            <form onSubmit={handleEditSubmit} className={styles.form}>
               <div>
                 <label htmlFor="avatarUrl" className="block text-lg font-medium text-gray-700">Avatar URL:</label>
                 <input
@@ -198,7 +176,7 @@ export default function EditReviewers() {
                   id="avatarUrl"
                   value={formData.avatarUrl}
                   onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-300 rounded-md"
+                  className={styles.input}
                   placeholder="Enter avatar URL"
                 />
               </div>
@@ -210,7 +188,7 @@ export default function EditReviewers() {
                   id="name"
                   value={formData.name}
                   onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-300 rounded-md"
+                  className={styles.input}
                   placeholder="Enter name"
                 />
               </div>
@@ -222,7 +200,7 @@ export default function EditReviewers() {
                   id="websiteUrl"
                   value={formData.websiteUrl}
                   onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-300 rounded-md"
+                  className={styles.input}
                   placeholder="Enter website URL"
                 />
               </div>
@@ -234,19 +212,50 @@ export default function EditReviewers() {
                   id="channelId"
                   value={formData.channelId}
                   onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-300 rounded-md"
+                  className={styles.input}
                   placeholder="Enter YouTube channel ID"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className={styles.button}
               >
                 Update Reviewer
               </button>
             </form>
           </>
         )}
+
+        {/* Paginación con botones "Previous" y "Next" */}
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={goToPreviousPage}
+            className={`${styles.button} ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+
+          <div className="flex space-x-4">
+            {[...Array(Math.ceil(reviewers.length / reviewersPerPage))].map((_, index) => (
+              <button
+                key={index}
+                onClick={() => changePage(index + 1)}
+                className={`${styles.button} ${currentPage === index + 1 ? 'bg-blue-600 text-white' : ''}`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={goToNextPage}
+            className={`${styles.button} ${currentPage === Math.ceil(reviewers.length / reviewersPerPage) ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={currentPage === Math.ceil(reviewers.length / reviewersPerPage)}
+          >
+            Next
+          </button>
+        </div>
 
         {/* Formulario de creación de un nuevo reviewer */}
         <h2 className="text-2xl font-semibold text-center text-gray-700 mb-4">Create New Reviewer</h2>
