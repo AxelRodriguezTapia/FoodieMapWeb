@@ -180,6 +180,16 @@ export default function EditReviewers() {
                   placeholder="Enter avatar URL"
                 />
               </div>
+              {/* Mostrar la imagen asociada a la URL ingresada */}
+              {formData.avatarUrl && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.avatarUrl}
+                      alt="Avatar"
+                      className="w-32 h-32 object-cover rounded-full"
+                    />
+                  </div>
+                )}
               <div>
                 <label htmlFor="name" className="block text-lg font-medium text-gray-700">Name:</label>
                 <input
