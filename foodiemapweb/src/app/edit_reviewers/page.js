@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { db } from "../../components/firebaseConfig.js"; // Asegúrate de que la configuración de Firebase esté correctamente importada
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import styles from "./styles.css";
+import apiKeys from "../utils/apiKeys.js";  // Importa la clave de la API de YouTube
+
 
 export default function EditReviewers() {
   // Estado para manejar los valores del formulario de edición
@@ -131,6 +133,48 @@ export default function EditReviewers() {
     setCurrentPage(currentPage < Math.ceil(reviewers.length / reviewersPerPage) ? currentPage + 1 : currentPage);
   };
 
+// Función para obtener el channelId de YouTube a partir del nombre de usuario o URL
+const fetchChannelId = async () => {
+  const websiteUrl = formData.websiteUrl;  // Usamos la websiteUrl en vez del name
+  
+  // Verificamos si la URL tiene el formato de "@username" (e.g., https://www.youtube.com/@username)
+  const channelNameRegex = /youtube\.com\/@([^/]+)/;
+
+  let channelId;
+
+  const matchChannelName = websiteUrl.match(channelNameRegex);
+  if (matchChannelName) {
+    const username = matchChannelName[1];  // Extraemos el nombre de usuario del canal
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${username}&key=${apiKeys}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.items && data.items.length > 0) {
+        channelId = data.items[0].id.channelId;  // Obtenemos el channelId de la respuesta de la API
+      } else {
+        alert("Channel not found."+url);
+      }
+    } catch (error) {
+      console.error("Error fetching channelId:", error);
+      alert("Failed to fetch channel ID.");
+    }
+  } else {
+    alert("Invalid YouTube URL format. Please enter a valid URL like 'https://www.youtube.com/@username'.");
+  }
+
+  // Si encontramos un channelId, lo actualizamos en el formulario
+  if (channelId) {
+    setFormData({
+      ...formData,
+      channelId: channelId,  // Establecemos el channelId en el estado
+    });
+  }
+};
+
+
+
   useEffect(() => {
     fetchReviewers();
   }, []);
@@ -225,6 +269,13 @@ export default function EditReviewers() {
                   className={styles.input}
                   placeholder="Enter YouTube channel ID"
                 />
+                <button
+                  type="button"
+                  onClick={fetchChannelId}
+                  className="ml-2 p-2 bg-blue-600 text-white rounded-md"
+                >
+                  Get Channel ID
+                </button>
               </div>
               <button
                 type="submit"
