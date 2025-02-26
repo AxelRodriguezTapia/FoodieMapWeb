@@ -154,7 +154,7 @@ const fetchChannelId = async () => {
       if (data.items && data.items.length > 0) {
         channelId = data.items[0].id.channelId;  // Obtenemos el channelId de la respuesta de la API
       } else {
-        alert("Channel not found."+url);
+        alert("Channel not found.");
       }
     } catch (error) {
       console.error("Error fetching channelId:", error);
