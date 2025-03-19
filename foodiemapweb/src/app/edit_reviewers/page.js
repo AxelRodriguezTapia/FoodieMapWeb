@@ -237,7 +237,7 @@ export default function EditReviewers() {
               hasMoreVideos = false;
               break;
             }
-  
+
             const videoData = {
               PlatformReviewId: item.id.videoId,
               publishDate: item.snippet.publishedAt,
