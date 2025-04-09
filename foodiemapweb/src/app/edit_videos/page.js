@@ -14,6 +14,7 @@ export default function ListVideos() {
   const [formData, setFormData] = useState({}); // Store form data for each video
   const [activeTab, setActiveTab] = useState({}); // Track active tab for each video
   const videosPerPage = 1;
+  const [suggestions, setSuggestions] = useState([]);
 
   const fetchTotalVideos = async () => {
     const videosCollection = collection(db, "VideosToEdit");
@@ -62,6 +63,28 @@ export default function ListVideos() {
         [name]: value,
       },
     }));
+  };
+  const handleSearchClick = async (query) => {
+    try {
+      const places = await searchPlaces(query); // Llama a tu servicio de Google Places
+      setSuggestions(places); // Actualiza las sugerencias con los resultados
+    } catch (error) {
+      console.error("Error en la búsqueda:", error);
+    }
+  };
+
+  const handleSuggestionClick = (videoId, suggestion) => {
+    setFormData((prev) => ({
+      ...prev,
+      [videoId]: {
+        ...prev[videoId],
+        searchRestaurant: suggestion.displayName.text, // Actualiza el campo con el nombre del restaurante
+        googlePlaceId: suggestion.id, // Ejemplo: puedes guardar más datos si es necesario
+        restaurantAddress: suggestion.formattedAddress, // Dirección del restaurante
+        restaurantName: suggestion.displayName.text, 
+      },
+    }));
+    setSuggestions([]); // Limpia las sugerencias después de seleccionar una
   };
 
   const handleSubmit = async (videoId, e) => {
@@ -234,39 +257,43 @@ export default function ListVideos() {
                   ></textarea>
                 </div>
                 <div>
-  <label htmlFor="searchRestaurant" className="block text-lg font-medium text-gray-700">
-    Buscar restaurante:
-  </label>
-  <div className="flex items-center">
-    <input
-      type="text"
-      name="searchRestaurant"
-      id="searchRestaurant"
-      placeholder="Buscar restaurante"
-      value={formData[video.id]?.searchRestaurant || ""}
-      onChange={(e) => handleInputChange(video.id, e)}
-      className="w-full p-3 border border-gray-300 rounded-md"
-    />
-    <button
-      type="button"
-      onClick={() => {
-        // Lógica para buscar restaurante
-        console.log("Buscando restaurante:", formData[video.id]?.searchRestaurant);
-        var query = formData[video.id]?.searchRestaurant || "";
-        searchPlaces(query)
-          .then((places) => {
-            console.log("Resultados de búsqueda:", places);
-          })
-          .catch((error) => {
-            console.error("Error en la búsqueda:", error);
-          });
-      }}
-      className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-    >
-      Buscar
-    </button>
-  </div>
-</div>
+        <label htmlFor="searchRestaurant" className="block text-lg font-medium text-gray-700">
+          Buscar restaurante:
+        </label>
+        <div className="relative">
+          <div className="flex items-center">
+            <input
+              type="text"
+              name="searchRestaurant"
+              id="searchRestaurant"
+              placeholder="Buscar restaurante"
+              value={formData[video.id]?.searchRestaurant || ""}
+              onChange={(e) => handleInputChange(video.id, e)}
+              className="w-full p-3 border border-gray-300 rounded-md"
+            />
+            <button
+              type="button"
+              onClick={() => handleSearchClick(formData[video.id]?.searchRestaurant || "")}
+              className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Buscar
+            </button>
+          </div>
+          {suggestions.length > 0 && (
+            <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full max-h-40 overflow-y-auto">
+              {suggestions.map((suggestion, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleSuggestionClick(video.id, suggestion)}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  {`${suggestion.displayName.text} - ${suggestion.formattedAddress}`}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
                 <div>
                   <label htmlFor="googlePlaceId" className="block text-lg font-medium text-gray-700">Google Place ID:</label>
                   <input
@@ -527,39 +554,43 @@ export default function ListVideos() {
                       ></textarea>
                     </div>
                     <div>
-  <label htmlFor="searchRestaurant" className="block text-lg font-medium text-gray-700">
-    Buscar restaurante:
-  </label>
-  <div className="flex items-center">
-    <input
-      type="text"
-      name="searchRestaurant"
-      id="searchRestaurant"
-      placeholder="Buscar restaurante"
-      value={formData[video.id]?.searchRestaurant || ""}
-      onChange={(e) => handleInputChange(video.id, e)}
-      className="w-full p-3 border border-gray-300 rounded-md"
-    />
-    <button
-      type="button"
-      onClick={() => {
-        // Lógica para buscar restaurante
-        console.log("Buscando restaurante:", formData[video.id]?.searchRestaurant);
-        var query = formData[video.id]?.searchRestaurant || "";
-        searchPlaces(query)
-          .then((places) => {
-            console.log("Resultados de búsqueda:", places);
-          })
-          .catch((error) => {
-            console.error("Error en la búsqueda:", error);
-          });
-      }}
-      className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-    >
-      Buscar
-    </button>
-  </div>
-</div>
+        <label htmlFor="searchRestaurant" className="block text-lg font-medium text-gray-700">
+          Buscar restaurante:
+        </label>
+        <div className="relative">
+          <div className="flex items-center">
+            <input
+              type="text"
+              name="searchRestaurant"
+              id="searchRestaurant"
+              placeholder="Buscar restaurante"
+              value={formData[video.id]?.searchRestaurant || ""}
+              onChange={(e) => handleInputChange(video.id, e)}
+              className="w-full p-3 border border-gray-300 rounded-md"
+            />
+            <button
+              type="button"
+              onClick={() => handleSearchClick(formData[video.id]?.searchRestaurant || "")}
+              className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Buscar
+            </button>
+          </div>
+          {suggestions.length > 0 && (
+            <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full max-h-40 overflow-y-auto">
+              {suggestions.map((suggestion, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleSuggestionClick(video.id, suggestion)}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  {`${suggestion.displayName.text} - ${suggestion.formattedAddress}`}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
                     <div>
                       <label
                         htmlFor="googlePlaceId"
