@@ -1,7 +1,7 @@
 import express from "express";
 import axios from "axios";
 import cors from "cors";
-import apiKeys from "../utils/apiKeys.js";  // Importa la clave de la API de YouTube
+import apiKeys from "../src/app/utils/apiKeys.js";  // Importa la clave de la API de YouTube
 
 
 const { GOOGLE_CLOUD_API_KEY } = apiKeys;

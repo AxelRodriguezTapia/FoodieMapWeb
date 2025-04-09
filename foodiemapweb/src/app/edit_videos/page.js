@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { db } from "../../components/firebaseConfig.js";
 import { collection, getDocs, query, orderBy, limit, startAt, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
+import { searchPlaces } from "../utils/googlePlacesService.js"; // Asegúrate de que la ruta sea correcta
 
 export default function ListVideos() {
   const [videos, setVideos] = useState([]);
@@ -161,6 +162,7 @@ export default function ListVideos() {
     // Crear una nueva review vacía
     const newReview = {
       reviewStartTime: "",
+      searchRestaurant: "",
       restaurantDescription: "",
       googlePlaceId: "",
       restaurantName: "",
@@ -231,6 +233,40 @@ export default function ListVideos() {
                     className="w-full p-3 border border-gray-300 rounded-md"
                   ></textarea>
                 </div>
+                <div>
+  <label htmlFor="searchRestaurant" className="block text-lg font-medium text-gray-700">
+    Buscar restaurante:
+  </label>
+  <div className="flex items-center">
+    <input
+      type="text"
+      name="searchRestaurant"
+      id="searchRestaurant"
+      placeholder="Buscar restaurante"
+      value={formData[video.id]?.searchRestaurant || ""}
+      onChange={(e) => handleInputChange(video.id, e)}
+      className="w-full p-3 border border-gray-300 rounded-md"
+    />
+    <button
+      type="button"
+      onClick={() => {
+        // Lógica para buscar restaurante
+        console.log("Buscando restaurante:", formData[video.id]?.searchRestaurant);
+        var query = formData[video.id]?.searchRestaurant || "";
+        searchPlaces(query)
+          .then((places) => {
+            console.log("Resultados de búsqueda:", places);
+          })
+          .catch((error) => {
+            console.error("Error en la búsqueda:", error);
+          });
+      }}
+      className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+    >
+      Buscar
+    </button>
+  </div>
+</div>
                 <div>
                   <label htmlFor="googlePlaceId" className="block text-lg font-medium text-gray-700">Google Place ID:</label>
                   <input
@@ -490,6 +526,40 @@ export default function ListVideos() {
                         className="w-full p-3 border border-gray-300 rounded-md"
                       ></textarea>
                     </div>
+                    <div>
+  <label htmlFor="searchRestaurant" className="block text-lg font-medium text-gray-700">
+    Buscar restaurante:
+  </label>
+  <div className="flex items-center">
+    <input
+      type="text"
+      name="searchRestaurant"
+      id="searchRestaurant"
+      placeholder="Buscar restaurante"
+      value={formData[video.id]?.searchRestaurant || ""}
+      onChange={(e) => handleInputChange(video.id, e)}
+      className="w-full p-3 border border-gray-300 rounded-md"
+    />
+    <button
+      type="button"
+      onClick={() => {
+        // Lógica para buscar restaurante
+        console.log("Buscando restaurante:", formData[video.id]?.searchRestaurant);
+        var query = formData[video.id]?.searchRestaurant || "";
+        searchPlaces(query)
+          .then((places) => {
+            console.log("Resultados de búsqueda:", places);
+          })
+          .catch((error) => {
+            console.error("Error en la búsqueda:", error);
+          });
+      }}
+      className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+    >
+      Buscar
+    </button>
+  </div>
+</div>
                     <div>
                       <label
                         htmlFor="googlePlaceId"

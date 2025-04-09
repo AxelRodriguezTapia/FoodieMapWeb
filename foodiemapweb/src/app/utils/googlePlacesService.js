@@ -14,7 +14,7 @@ export const searchPlaces = async (query) => {
   
 
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       return data.places || [];
     } catch (error) {
       console.error("Error en la búsqueda de Google Places:", error);
