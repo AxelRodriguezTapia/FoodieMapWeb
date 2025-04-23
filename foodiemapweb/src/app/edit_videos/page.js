@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { db } from "../../components/firebaseConfig.js";
-import { collection, getDocs, query, orderBy, limit, startAt, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, startAt, doc, updateDoc, arrayUnion, getDoc, setDoc } from "firebase/firestore";
 import { searchPlaces,getPlaceDetails } from "../utils/googlePlacesService.js"; // Asegúrate de que la ruta sea correcta
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -166,6 +166,60 @@ export default function ListVideos() {
     fetchTotalVideos();
     fetchVideos(currentPage);
   }, [currentPage]);
+
+  const handleDumpInformation = async () => {
+    try {
+      for (const video of videos) {
+        if (video.reviews && video.reviews.length > 0) {
+          for (const review of video.reviews) {
+            const restaurantRef = doc(db, "Restaurants", review.googlePlaceId);
+            const restaurantSnapshot = await getDoc(restaurantRef);
+  
+            if (restaurantSnapshot.exists()) {
+              // Si el restaurante ya existe, añadir el video al array de reviews
+              const existingData = restaurantSnapshot.data();
+              await updateDoc(restaurantRef, {
+                reviews: arrayUnion({
+                  videoId: video.id,
+                  videoTitle: video.Title,
+                  reviewStartTime: review.reviewStartTime,
+                }),
+              });
+            } else {
+              // Si el restaurante no existe, crearlo con los datos de la review
+              await setDoc(restaurantRef, {
+                name: review.restaurantName,
+                address: review.restaurantAddress,
+                phone: review.restaurantPhone,
+                website: review.restaurantWebsite,
+                googlePlaceId: review.googlePlaceId,
+                googleMapsLink: review.googleMapsLink,
+                googleMapsRating: review.googleMapsRating,
+                googleMapsReviews: review.googleMapsReviews,
+                googleMapsPriceLevel: review.googleMapsPriceLevel,
+                location: review.restaurantLocation,
+                status: review.restaurantStatus,
+                image: review.restaurantImage,
+                reviews: [
+                  {
+                    videoId: video.id,
+                    videoTitle: video.Title,
+                    reviewStartTime: review.reviewStartTime,
+                  },
+                ],
+              });
+            }
+          }
+        }
+      }
+      alert("Información volcada correctamente.");
+    } catch (error) {
+      console.error("Error al volcar información:", error);
+      alert("Hubo un error al volcar la información.");
+    }
+  };
+
+
 
   return (
     <div className="flex flex-col items-center bg-white min-h-screen py-8">
@@ -987,6 +1041,12 @@ export default function ListVideos() {
   >
     Eliminar
   </button>
+  <button
+  onClick={handleDumpInformation}
+  className="px-4 py-2 bg-purple-600 text-white rounded-lg mx-auto block mt-4"
+>
+  Volcar Información
+</button>
 </div>
                   </form>
                 )}
