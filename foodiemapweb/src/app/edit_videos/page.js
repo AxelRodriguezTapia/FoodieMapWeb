@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { db } from "../../components/firebaseConfig.js";
 import { collection, getDocs, query, orderBy, limit, startAt, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { searchPlaces,getPlaceDetails } from "../utils/googlePlacesService.js"; // Asegúrate de que la ruta sea correcta
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from "leaflet";
 
 export default function ListVideos() {
   const [videos, setVideos] = useState([]);
@@ -73,6 +76,13 @@ export default function ListVideos() {
     }
   };
 
+  const markerIcon = L.icon({
+    iconUrl: "/images/marker.png", // Ruta de la imagen del marcador
+    iconSize: [32, 32], // Tamaño del icono
+    iconAnchor: [16, 32], // Punto de anclaje
+    popupAnchor: [0, -32], // Punto donde aparece el popup
+  });
+
   const handleSuggestionClick = async (videoId, suggestion) => {
     try {
       // Llama a getPlaceDetails para obtener más detalles del lugar
@@ -99,6 +109,8 @@ export default function ListVideos() {
           restaurantStatus: placeDetails.businessStatus || "", // Estado del restaurante
         },
       }));
+      console.log("Detalles del lugar:", `${placeDetails.location.latitude}, ${placeDetails.location.longitude}`);
+
   
       setSuggestions([]); // Limpia las sugerencias después de seleccionar una
     } catch (error) {
@@ -435,16 +447,39 @@ export default function ListVideos() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="restaurantLocation" className="block text-lg font-medium text-gray-700">Mapa de la ubicación del lugar:</label>
-                  <input
-                    type="text"
-                    name="restaurantLocation"
-                    id="restaurantLocation"
-                    placeholder="Mapa de la ubicación del lugar"
-                    value={formData[video.id]?.restaurantLocation || ""}
-                    onChange={(e) => handleInputChange(video.id, e)}
-                    className="w-full p-3 border border-gray-300 rounded-md"
-                  />
+                <MapContainer
+  center={
+    formData[video.id]?.restaurantLocation
+      ? (() => {
+          const [lat, lng] = formData[video.id].restaurantLocation
+            .split(",")
+            .map(coord => parseFloat(coord.trim())); // Convertir a números
+
+          return !isNaN(lat) && !isNaN(lng) ? [lat, lng] : [40.4168, -3.7038]; // Usar valores por defecto si no son válidos
+        })()
+      : [40.4168, -3.7038] // Valores por defecto
+  }
+  zoom={13}
+  style={{ height: "400px", width: "100%" }}
+>
+  <TileLayer
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  />
+  {formData[video.id]?.restaurantLocation && (() => {
+    const [lat, lng] = formData[video.id].restaurantLocation
+      .split(",")
+      .map(coord => parseFloat(coord.trim())); // Convertir a números
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      return (
+        <Marker position={[lat, lng]} icon={markerIcon}>
+          <Popup>{formData[video.id]?.restaurantName || "Ubicación seleccionada"}</Popup>
+        </Marker>
+      );
+    }
+    return null; // No renderizar si las coordenadas no son válidas
+  })()}
+</MapContainer>
                 </div>
                 <div>
                   <label htmlFor="restaurantImage" className="block text-lg font-medium text-gray-700">Imagen del restaurante:</label>
@@ -822,25 +857,39 @@ export default function ListVideos() {
                       />
                     </div>
                     <div>
-                      <label
-                        htmlFor="restaurantLocation"
-                        className="block text-lg font-medium text-gray-700"
-                      >
-                        Mapa de la ubicación del lugar:
-                      </label>
-                      <input
-                        type="text"
-                        name="restaurantLocation"
-                        id="restaurantLocation"
-                        placeholder="Mapa de la ubicación del lugar"
-                        value={
-                          formData[video.id]?.restaurantLocation ||
-                          video.reviews[activeTab[video.id]].restaurantLocation ||
-                          ""
-                        }
-                        onChange={(e) => handleInputChange(video.id, e)}
-                        className="w-full p-3 border border-gray-300 rounded-md"
-                      />
+                    <MapContainer
+  center={
+    formData[video.id]?.restaurantLocation
+      ? (() => {
+          const [lat, lng] = formData[video.id].restaurantLocation
+            .split(",")
+            .map(coord => parseFloat(coord.trim())); // Convertir a números
+
+          return !isNaN(lat) && !isNaN(lng) ? [lat, lng] : [40.4168, -3.7038]; // Usar valores por defecto si no son válidos
+        })()
+      : [40.4168, -3.7038] // Valores por defecto
+  }
+  zoom={13}
+  style={{ height: "400px", width: "100%" }}
+>
+  <TileLayer
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  />
+  {formData[video.id]?.restaurantLocation && (() => {
+    const [lat, lng] = formData[video.id].restaurantLocation
+      .split(",")
+      .map(coord => parseFloat(coord.trim())); // Convertir a números
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      return (
+        <Marker position={[lat, lng]} icon={markerIcon}>
+          <Popup>{formData[video.id]?.restaurantName || "Ubicación seleccionada"}</Popup>
+        </Marker>
+      );
+    }
+    return null; // No renderizar si las coordenadas no son válidas
+  })()}
+</MapContainer>
                     </div>
                     <div>
                       <label
