@@ -183,6 +183,7 @@ export default function ListVideos() {
                   videoId: video.id,
                   videoTitle: video.Title,
                   reviewStartTime: review.reviewStartTime,
+                  videoPlatformReviewId: video.PlatformReviewId,
                 }),
               });
             } else {
@@ -205,6 +206,7 @@ export default function ListVideos() {
                     videoId: video.id,
                     videoTitle: video.Title,
                     reviewStartTime: review.reviewStartTime,
+                    videoPlatformReviewId: video.PlatformReviewId,
                   },
                 ],
               });
