@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { db } from "../../components/firebaseConfig.js";
 import { collection, getDocs, query, orderBy, limit, startAt, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
-import { searchPlaces } from "../utils/googlePlacesService.js"; // Asegúrate de que la ruta sea correcta
+import { searchPlaces,getPlaceDetails } from "../utils/googlePlacesService.js"; // Asegúrate de que la ruta sea correcta
 
 export default function ListVideos() {
   const [videos, setVideos] = useState([]);
@@ -73,18 +73,38 @@ export default function ListVideos() {
     }
   };
 
-  const handleSuggestionClick = (videoId, suggestion) => {
-    setFormData((prev) => ({
-      ...prev,
-      [videoId]: {
-        ...prev[videoId],
-        searchRestaurant: suggestion.displayName.text, // Actualiza el campo con el nombre del restaurante
-        googlePlaceId: suggestion.id, // Ejemplo: puedes guardar más datos si es necesario
-        restaurantAddress: suggestion.formattedAddress, // Dirección del restaurante
-        restaurantName: suggestion.displayName.text, 
-      },
-    }));
-    setSuggestions([]); // Limpia las sugerencias después de seleccionar una
+  const handleSuggestionClick = async (videoId, suggestion) => {
+    try {
+      // Llama a getPlaceDetails para obtener más detalles del lugar
+      const placeDetails = await getPlaceDetails(suggestion.id);
+  
+      setFormData((prev) => ({
+        ...prev,
+        [videoId]: {
+          ...prev[videoId],
+          searchRestaurant: suggestion.displayName.text, // Nombre del restaurante
+          googlePlaceId: suggestion.id, // ID de Google Place
+          restaurantAddress: placeDetails.formattedAddress || "", // Dirección del restaurante
+          restaurantName: suggestion.displayName.text, // Nombre del restaurante
+          restaurantPhone: placeDetails.internationalPhoneNumber || "", // Teléfono del restaurante
+          restaurantWebsite: placeDetails.website || "", // Website del restaurante
+          tripadvisorLink: "", // Puedes agregar lógica para obtener este dato si es necesario
+          googleMapsLink: placeDetails.googleMapsUri || "", // Enlace de Google Maps
+          googleMapsRating: placeDetails.rating || "", // Rating de Google Maps
+          googleMapsReviews: placeDetails.userRatingCount || "", // Número de reviews en Google Maps
+          googleMapsPriceLevel: placeDetails.priceLevel || "", // Nivel de precio en Google Maps
+          restaurantLocation: placeDetails.location
+            ? `${placeDetails.location.latitude}, ${placeDetails.location.longitude}`
+            : "", // Ubicación del restaurante
+          restaurantStatus: placeDetails.businessStatus || "", // Estado del restaurante
+        },
+      }));
+  
+      setSuggestions([]); // Limpia las sugerencias después de seleccionar una
+    } catch (error) {
+      console.error("Error al obtener detalles del lugar:", error);
+      // Manejo de errores, si es necesario
+    }
   };
 
   const handleSubmit = async (videoId, e) => {
