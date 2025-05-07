@@ -11,11 +11,12 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.page{
+.page {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start; /* Cambiado de center a flex-start para evitar que el contenido se centre verticalmente */
+  min-height: 100vh; /* Cambiado de height a min-height */
   background-color: #f9f9f9;
   margin-left: 250px;
+  padding-top: 20px; /* Agregado para evitar que el contenido se corte por arriba */
 }

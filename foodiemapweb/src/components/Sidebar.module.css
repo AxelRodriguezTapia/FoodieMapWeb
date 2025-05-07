@@ -18,13 +18,13 @@
     display: block;
     padding: 12px;
     border-radius: 4px;
-    background-color: #e60000; /* Rojo más suave para los enlaces */
+    background-color: #0091ff; /* Azul más suave para los enlaces */
     margin-bottom: 8px;
     text-decoration: none;
     color: white;
   }
   
   .nav-link:hover {
-    background-color: #cc0000; /* Color de hover más oscuro */
+    background-color: #001eff; /* Color de hover más oscuro */
   }
   

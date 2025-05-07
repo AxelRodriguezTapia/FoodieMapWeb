@@ -7,6 +7,7 @@ import { searchPlaces,getPlaceDetails } from "../utils/googlePlacesService.js"; 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from "leaflet";
+import styles from "./styles.css";
 
 export default function ListVideos() {
   const [videos, setVideos] = useState([]);
@@ -133,12 +134,14 @@ export default function ListVideos() {
       });
 
       console.log("Review added successfully for video:", videoId);
+      alert("Review added successfully for video:", videoId);
 
       // Close the form and clear the form data for this video
       setShowForm((prev) => ({ ...prev, [videoId]: false }));
       setFormData((prev) => ({ ...prev, [videoId]: {} }));
     } catch (error) {
       console.error("Error saving review:", error);
+      alert("Error saving review:", error);
     }
   };
 
@@ -549,6 +552,16 @@ export default function ListVideos() {
                     className="w-full p-3 border border-gray-300 rounded-md"
                   />
                 </div>
+                {/* Mostrar la imagen asociada a la URL ingresada */}
+                {formData[video.id]?.restaurantImage && (
+                  <div className="mt-2">
+                    <img
+                      src={formData[video.id]?.restaurantImage}
+                      alt="Avatar"
+                      className="w-32 h-32 object-cover rounded-full"
+                    />
+                  </div>
+                )}
                 <div>
                   <label htmlFor="restaurantStatus" className="block text-lg font-medium text-gray-700">Estado del restaurante:</label>
                   <input
@@ -968,6 +981,15 @@ export default function ListVideos() {
                         className="w-full p-3 border border-gray-300 rounded-md"
                       />
                     </div>
+                    {formData[video.id]?.restaurantImage && (
+                  <div className="mt-2">
+                    <img
+                      src={formData[video.id]?.restaurantImage}
+                      alt="Avatar"
+                      className="w-32 h-32 object-cover rounded-full"
+                    />
+                  </div>
+                )}
                     <div>
                       <label
                         htmlFor="restaurantStatus"

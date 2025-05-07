@@ -6,6 +6,7 @@ import { collection, getDocs, query, orderBy, limit, startAt, doc, updateDoc } f
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import styles from "./styles.css";
 
 // Configuración del icono del marcador
 const markerIcon = L.icon({
@@ -93,10 +94,10 @@ export default function ListRestaurants() {
   };
 
   return (
-    <div className="flex flex-col items-center bg-white min-h-screen py-8">
-      <h1 className="text-center text-blue-700 text-4xl font-extrabold mb-6">LISTA DE RESTAURANTES</h1>
-      <div className="w-full max-w-4xl bg-gray-100 shadow-lg rounded-lg p-6">
-        {loading && <p className="text-gray-500 text-center">Cargando...</p>}
+    <div className="flex flex-col items-center bg-white min-h-screen py-8" style={{ paddingTop: "4rem" }}>
+    <h1 className="text-center text-blue-700 text-4xl font-extrabold mb-6">LISTA DE RESTAURANTES</h1>
+    <div className="w-full max-w-4xl bg-gray-100 shadow-lg rounded-lg p-6">
+      {loading && <p className="text-gray-500 text-center">Cargando...</p>}
         <ul>
           {restaurants.map((restaurant) => {
             const reviewPage = currentReviewPage[restaurant.id] || 1;
@@ -174,6 +175,15 @@ export default function ListRestaurants() {
                           className="w-full p-3 border border-gray-300 rounded-md"
                         />
                       </div>
+                      {restaurant.image && (
+                  <div className="mt-2">
+                    <img
+                      src={restaurant.image}
+                      alt="Avatar"
+                      className="w-32 h-32 object-cover rounded-full"
+                    />
+                  </div>
+                )}
                       <div className="flex justify-between">
                         <button
                           type="submit"
@@ -206,6 +216,18 @@ export default function ListRestaurants() {
                       <p className="text-sm text-gray-500">
                         <strong>Reviews:</strong> {restaurant.reviews?.length || 0}
                       </p>
+                      <p className="text-sm text-gray-500">
+                        <strong>Estado:</strong> {restaurant.status}
+                      </p>
+                      {restaurant.image && (
+                        <div className="mt-2">
+                          <img
+                            src={restaurant.image}
+                            alt="Avatar"
+                            className="w-32 h-32 object-cover rounded-full"
+                          />
+                        </div>
+                      )}
                       <button
                         onClick={() => setEditingRestaurant(restaurant.id)}
                         className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mt-4"
