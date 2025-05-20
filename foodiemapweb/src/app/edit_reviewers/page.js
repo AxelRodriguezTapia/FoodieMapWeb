@@ -165,7 +165,7 @@ export default function EditReviewers() {
     const matchChannelName = websiteUrl.match(channelNameRegex);
     if (matchChannelName) {
       const username = matchChannelName[1];  // Extraemos el nombre de usuario del canal
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${username}&key=${apiKeys}`;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${username}&key=${apiKeys.GOOGLE_CLOUD_API_KEY}`;
 
       try {
         const response = await fetch(url);
@@ -207,7 +207,7 @@ export default function EditReviewers() {
     let lastVideoDate;
   
     // Primera petición para obtener la fecha de publicación del lastVideoId
-    const initialUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${lastVideoId}&key=${apiKeys}`;
+    const initialUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${lastVideoId}&key=${apiKeys.GOOGLE_CLOUD_API_KEY}`;
     try {
       const initialResponse = await fetch(initialUrl);
       const initialData = await initialResponse.json();
@@ -224,13 +224,14 @@ export default function EditReviewers() {
     }
   
     while (hasMoreVideos) {
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${formData.channelId}&maxResults=10&order=date&pageToken=${nextPageToken}&key=${apiKeys}`;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${formData.channelId}&maxResults=10&order=date&pageToken=${nextPageToken}&key=${apiKeys.GOOGLE_CLOUD_API_KEY}`;
   
       try {
         const response = await fetch(url);
         const data = await response.json();
   
         if (data.items && data.items.length > 0) {
+          console.log("Fetched videos:", data.items);
           for (const item of data.items) {
             const videoDate = new Date(item.snippet.publishedAt);
             if (videoDate <= lastVideoDate) {
@@ -267,6 +268,7 @@ export default function EditReviewers() {
         console.error("Error fetching recent videos:", error);
         alert("Failed to fetch recent videos.");
         hasMoreVideos = false;
+        return;
       }
     }
   
